@@ -1,107 +1,303 @@
-# This is the file for the NBA game dataClass
-# Enum TODO
-# 	- competitor.homeAway
-#   - statistic.name
+# This is a file with classes that conform to the json returned from this endpoint: http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
 
-class NbaGame:
-	def _init_(day, events ):
-		self.day = day # This is a Day data Type
-		self.events = events # Collection of Events (Haven't yet seen a scenario with more than 1
+class NbaGames():
+	def __init__(self, day, events, leagues, season):
+		self.day = Day(**day) # This is a Day data Type
 
+		eventCollection = []
+		for event in events:
+			eventCollection.append(Event(**event))
+		self.events = eventCollection # Collection of Events (Haven't yet seen a scenario with more than 1
 
-class Day:
-	def _init_(date):
-		self.date = date # Date
+		leagueCollection = []
+		for league in leagues:
+			leagueCollection.append(League(**league))
+		self.leagues = leagueCollection  # Collection of League
 
-class Event:
-	def _init_(competitions):
-		self.competitions = competitions # Collection of Competitions
+		self.season = Season(**season) # Season Object with type and year only
 
+class Address():
+	def __init__(self, city, state):
+		self.city = city # String 'Portland'
+		self.state = state # String e.g. 'OR'
 
-class Competition:
-	def _init_(attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent):
-		self.attendance = attendance # Int
-		self.broadcasts = broadcasts # Collection of Broadcasts
-		self.competitors = competitors # Collection of Competitors
-		self.conferenceCompetition = conferenceCompetition # Bool
-		self.date = date = # Date of Event (e.g. '2021-01-24T18:00Z')
-		self.geoBroadcasts = geoBroadcasts # Collection of GeoBroadcast
-		self.id = id # String representing id (e.g. '401267409')
-		self.neutralSite = neutralSite # Bool
-		self.notes = notes # This is an empty array. I assume a Collection of strings, maybe a Note object
-		self.recent = recent # Bool
-# NEXT STEP will be the situation
-
-
-class Broadcast:
-	def _init_(market, names):
-		self.market = market # String representing (National, Home, Away)
-		self.names = names # Collection of strings representing channel (e.g. 'FS1', 'NBATV')
-
-class Competitor:
-	def _init_(homeAway, id, leaders, lineScores, order, records, score, statistics, team, type, uid):
-		self.homeAway = homeAway # String that will be 'home' or 'away'
-		self.id = id # String representing id as number
-		self.leaders = leaders # Collection of Leader objects
-		self.lineScores = lineScores # Collection of LineScores
-		self.order = order # Int representing not sure (e.g. 0)
-		self.records = records # Collection of Record
-		self.score = score # String rep. number (e.g. '58')
-		self.statistics = statistics # Collection of Statistics
-		self.team = team # Team Object
-		self.type = type # String (e.g. 'team')
-		self.uid = uid # String for userId I assume ( e.g. 's:40~l:46~t:11')
-
-class Leader:
-	def _init_(abbreviation, displayName, statLeaders, name, shortDisplayName):
-		self.abbreviation = abbreviation # String (e.g.  'Pts', 'Reb'))
-		self.displayName = displayName # String giving display name of above (e.g. "Points", "Rebounds")
-		self.statLeaders = statLeaders # This is competitors.leaders.leaders (This is a collection of each stat)
-		self.name = name # This is the string for name (e.g. 'points')
-		self.shortDisplayName = shortDisplayName # This is the short displayName (e.g. 'Pts')
-
-class StatLeaders:
-	def _init_(athlete, displayValue, team, value):
-		self.athlete = athlete # Athlete
-		self.displayValue = displayValue # String representing number (e.g. '13')
-		self.team = team # Team Object
-		self.value = value # Float value of stat (e.g. 13.0)
-
-class Athlete:
-	def _init_(active, displayName, fullName, headshot, id, jersey, links, position, shortName, team):
+class Athlete():
+	def __init__(self, active, displayName, fullName, headshot, id, jersey, links, position, shortName, team):
 		self.active = active # Bool
 		self.displayName = displayName # Two part String 'Justin ', 'Holiday'
 		self.fullName = fullName # Two part String 'Justin ' 'Holiday'
 		self.headshot = headshot # This is a link to the headshot of each player
 		self.id = id # String (e.g. '2284101' - Should return Justin Holiday)
 		self.jersey = jersey # String rep. of a number (e.g. '8')
-		self.links = links # Collection of Links
-		self.shortName = shortName # Two Part String - (e.g. 'J. ' 'Holiday')
-		self.team = team # Team Object with Id only
 
-class Link:
+		linkCollection = []
+		for link in links:
+			linkCollection.append(Link(**link))
+		self.links = linkCollection # Collection of Links (href and rel only)
+
+		self.position = Position(**position) # Position Object
+		self.shortName = shortName # Two Part String - (e.g. 'J. ' 'Holiday')
+		self.team = Team(**team) # Team Object with Id only
+
+class Broadcast():
+	def __init__(self, market, names):
+		self.market = market # String representing (National, Home, Away)
+		self.names = names # Collection of strings representing channel (e.g. 'FS1', 'NBATV')
+
+class Competition():
+	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, odds, notes, recent, situation, startDate, status, timeValid, type, uid, venue):
+		self.attendance = attendance # Int
+
+		broadcastCollection = []
+		for broadcast in broadcasts:
+			broadcastCollection.append(Broadcast(**broadcast))
+		self.broadcasts = broadcastCollection # Collection of Broadcasts
+
+		competitorCollection = []
+		for competitor in competitors:
+			competitorCollection.append(Competitor(**competitor))
+		self.competitors = competitorCollection # Collection of Competitors
+
+		self.conferenceCompetition = conferenceCompetition # Bool
+		self.date = date # String of Date of Event (e.g. '2021-01-24T18:00Z')
+
+		geoBroadcastCollection = []
+		for geoBroadcast in geoBroadcasts:
+			geoBroadcastCollection.append(GeoBroadcast(**geoBroadcast))
+		self.geoBroadcasts = geoBroadcastCollection # Collection of GeoBroadcast
+
+		self.id = id # String representing id (e.g. '401267409')
+		self.neutralSite = neutralSite # Bool
+		self.notes = notes # This is an empty array. I assume a Collection of strings, maybe a Note object
+	# TODO:	self.odds = odds # This is a optional Variable - Collection of Odds Type
+		self.recent = recent # Bool
+		self.situation = Situation(**situation) # Situation Object
+		self.startDate = startDate # String of Date e.g. '2021-01-26T03:00Z'
+		self.status = Status(**status) # Status Object'
+		self.timeValid = timeValid # Bool
+		self.type = Competition_Type(**type) # CompetitionType object
+		self.uid = uid # String of userId 's:40~l:46~e:401267427~c:401267427'
+		self.venue = Venue(**venue) # Venue Object
+
+class Competition_Type():
+	def __init__(self, abbreviation, id):
+		self.abbreviation = abbreviation # String e.g. 'STD' - I assume this means non-playoff
+		self.id = id # String of Int e.g. '1'
+
+class Competitor():
+	def __init__(self, homeAway, id, leaders, lineScores, order, records, score, statistics, team, type, uid):
+		self.homeAway = homeAway # String that will be 'home' or 'away'
+		self.id = id # String representing id as number
+
+		leaderCollection = []
+		for leader in leaders:
+			leaderCollection.append(Leader(**leader))
+		self.leaders = leaderCollection # Collection of Leader objects
+
+		lineScoreCollection = []
+		for lineScore in lineScoreCollection:
+			lineScoreCollection.append(LineScore(**lineScore))
+		self.lineScores = lineScoreCollection # Collection of LineScores - This is optional
+
+		self.order = order # Int representing not sure (e.g. 0)
+
+		recordCollection = []
+		for record in recordCollection:
+			recordCollection.append(Record(**record))
+		self.records = recordCollection # Collection of Record
+
+		self.score = score # String rep. number (e.g. '58')
+
+		statisticCollection = []
+		for statistic in statistics:
+			statisticCollection.append(Statistic(**statistic))
+		self.statistics = statisticCollection # Collection of Statistics
+
+		self.team = Team(**team) # Team Object
+		self.type = type # String (e.g. 'team')
+		self.uid = uid # String for userId I assume ( e.g. 's:40~l:46~t:11')
+
+class Day():
+	def __init__(self, date):
+		self.date = date # Date
+
+class Event():
+	def __init__(self, competitions, date, id, links, name, season, shortName, status, uid):
+		competitionCollection = []
+		for competition in competitions:
+			competitionCollection.append(Competition(**competition))
+		self.competitions = competitionCollection # Collection of Competitions
+
+		self.date = date # String rep. of Date '2021-01-26T03:00Z'
+		self.id = id # String rep of number; e.g. '401267427'
+
+		linkCollection = []
+		for link in links:
+			linkCollection.append(Link(**link))
+		self.links = linkCollection # Collection of Links
+
+		self.name = name # String of Full name
+		self.season = Season(**season) # Season Object
+		self.shortName = shortName # String e.g. 'OKC @ POR'
+		self.status = Status(**status) # Status Object
+		self.uid = uid # UserId I assume - String
+
+class GeoBroadcast():
+	def __init__(self, lang, market, media, region, type):
+		self.lang = lang # String for what language (e.g. 'en')
+		self.market = Market(**market) # Market Object
+		self.media = Media(**media) # Media Object
+		self.region = region # String for region (e.g. 'us')
+		self.type = Geo_Type(**type) # GeoType Object
+
+class Geo_Type():
+	def __init__(self, id, shortName):
+		self.id = id # String for Id
+		self.shortName = shortName # String for shortName (e.g. 'TV')
+
+class LastPlay():
+	def __init__(self, id, probability, scoreValue, text, type):
+		self.id = id # String rep of Id '401267427323'
+		self.probability = Probability(**probability) # Probability Object
+		self.scoreValue = scoreValue # Int of Score
+		self.text = text # String two part - 'End of the ' '2nd Quarter'
+		self.type = LastPlay_Type(**type) # Type Object (id, text)
+
+class LastPlay_Type():
+	def __init__(self, id, text)
+		self.id = id # String e.g. '412'
+		self.text = text # Two part 'End ' 'Period'
+
+class Leader():
+	def __init__(self, abbreviation, displayName, leaders, name, shortDisplayName):
+		self.abbreviation = abbreviation # String (e.g.  'Pts', 'Reb'))
+		self.displayName = displayName # String giving display name of above (e.g. "Points", "Rebounds")
+
+		statLeaderCollection = []
+		for leader in learders:
+			statLeaderCollection.append(StatLeader(**leader))
+		self.statLeaders = statLeaderCollection # This is competitors.leaders.leaders (This is a collection of each stat)
+
+		self.name = name # This is the string for name (e.g. 'points')
+		self.shortDisplayName = shortDisplayName # This is the short displayName (e.g. 'Pts')
+
+class League():
+	def __init__(self, abbreviation, calendar, calendarEndDate, calendarIsWhitelist, calendarStartDate, calendarType, id, name, season, slug, uid):
+		self.abbreviation = abbreviation # String e.g. 'NBA'
+		self.calendar = calendar # Collection of String Dates e.g '2020-12-11T08:00Z'
+		self.calendarEndDate = calendarEndDate # String of Date e.g. '2020-12-11T08:00Z'
+		self.calendarIsWhitelist = calendarIsWhitelist # Bool
+		self.calendarStartDate = calendarStartDate # String of date e.g. '2020-12-11T08:00Z'
+		self.calendarType = calendarType # Enum I assume e.g. 'day'
+		self.id = id # String of Int e.g. '46'
+		self.name = name # String long name e.g. 'National Basketball Association'
+		self.season = Season(**season) # Season Object
+		self.slug = slug # String e.g. 'nba' - Not sure what this represents
+		self.uid = uid # String of id e.g. 's:40~l:46'
+
+class LineScore():
+	def __init__(self, value):
+		self.value = value # Float representing lineScore (e.g. 24.0)
+
+class Link():
 	# href, rel are used, rest are optional
-	def _init_(href, isExternal, isPremium, rel, text):
+	def __init__(self, href, isExternal, isPremium, rel, shortText, text):
 		self.href = href # String address of espn home screen for player
 		self.isExternal = isExternal # Bool
 		self.isPremium = isPremium # Bool
 		self.rel = rel # Collection of Strings
+		self.shortText = shortText # Optional ShortText e.g. 'Gamecast'
 		self.text = text # String representing first rel it looks like (e.g. 'Clubhouse')
 
-class Position:
-	def _init_(abbreviation):
+class Market():
+	def __init__(self, id, type):
+		self.id = id # String representing id
+		self.type = type # String (e.g. 'National', 'Home', 'Away')
+
+class Media():
+	def __init__(self, shortName):
+		self.shortName = shortName # ShortName of Media (e.g. 'NBATV')
+
+class Position():
+	def __init__(self, abbreviation):
 		self.abbreviation = abbreviation # String for position shortened (e.g. 'SG' - Starting Guard)
 
-class Team:
+class Probability():
+	def __init__(self, awayWinPercentage, homeWinPercentage, tiePercentage):
+		self.awayWinPercentage = awayWinPercentage # Float 0.76
+		self.homeWinPercentage = homeWinPercentage # Float 0.24
+		self.tiePercentage = tiePercentage # Float 0.0
+
+class Record():
+	def __init__(self, abbreviation, name, summary, type):
+		self.abbreviation = abbreviation # This seems optional as not all have it, String
+		self.name = name # String maybe 2 parts (e.g. 'All ' 'Splits', or 'Home')
+		self.summary = summary # Summary of record as string (e.g. '9-6')
+		self.type = type # Possibly Enum (e.g. 'road', 'home', 'total')
+
+class Season():
+	def __init__(self, endDate, startDate, type, year):
+		self.endDate = endDate # String of date e.g '2020-12-11T08:00Z'
+		self.startDate = startDate # String of date e.g '2020-12-11T08:00Z'
+		self.type = Season_Type(**type) # Int e.g. 2 - NONOPTIONAL
+		self.year = year # Int e.g. 2021 - NONOPTIONAL
+
+class Season_Type():
+	def __init__(self, abbreviation, id, name, type)
+		self.abbreviation = abbreviation # String 'reg'
+		self.id = id # String rep of Int e.g. '1'
+		self.name = name # String - 'Regular Season'
+		self.type = type # Int e.g. 2
+
+class Situation():
+	def __init__(self, lastPlay):
+		self.lastPlay = LastPlay(**lastPlay)
+
+class Statistic():
+	def __init__(self, abbreviation, displayValue, name):
+		self.abbreviation = abbreviation # Abbreviation of name: (e.g. '3P%')
+		self.displayValue = displayValue # Display value of Number: '31.8'
+		self.name = name # This is probably enum (e.g. 'threePointFieldGoalPct')
+
+class StatLeaders():
+	def __init__(self, athlete, displayValue, team, value):
+		self.athlete = Athlete(**athlete) # Athlete
+		self.displayValue = displayValue # String representing number (e.g. '13')
+		self.team = Team(**team) # Team Object
+		self.value = value # Float value of stat (e.g. 13.0)
+
+class Status():
+	def __init__(self, clock, displayClock, period, type):
+		self.clock = clock # Float e.g. 0.0
+		self.displayClock = displayClock # String of above as displayed (e.g. '11:42')
+		self.period = period # Int
+		self.type = Status_Type(**type) # StatusType object
+
+class Status_Type():
+	def __init__(self, completed, description, detail, id, name, shortDetail, state):
+		self.completed = completed # Bool
+		self.description = description # String (e.g. 'Schedule', 'Halftime')
+		self.detail = detail # Multi-line String (e.g. 'Mon, January ' '25th at 10:00 PM' 'EST', or one line 'Halftime')
+		self.id = id # String of Number '1'
+		self.name = name	# enum of 'STATUS_SCHEDULED, STATUS_HALFTIME'
+		self.shortDetail = shortDetail # String (e.g. '1/25 - ' '10:00 PM ' 'EST')
+		self.state = state # String probably enum (e.g. 'pre')
+
+class Team():
 	# Id is the only one that is used everywhere
-	def _init_(abbreviation, alternateColor, color, displayName, id, isActive, links, location, logo, name, shortDisplayName, uid, venue):
+	def __init__(self, abbreviation, alternateColor, color, displayName, id, isActive, links, location, logo, name, shortDisplayName, uid, venue):
 		self.abbreviation = abbreviation # Abbreviation of team name (e.g. 'IND')
 		self.alternateColor = alternateColor # String representing alternateColor: (e.g. '00275d')
 		self.color = color # This is the color String (e.g. '061642')
 		self.displayName = displayName # This is the display name of the team (e.g. 'Indiana ' 'Pacers')
 		self.id = id # String representing number as id (e.g. '11')
 		self.isActive = isActive # Bool
-		self.links = links # Collection of Link
+
+		linkCollection = []
+		for link in links:
+			linkCollection.append(Link(**link))
+		self.links = linkCollection # Collection of Links
+
 		self.location = location # String of location (e.g. 'Indiana')
 		self.logo = logo # Link to the logo of the team as a String
 		self.name = name # String of Name (e.g. 'Pacers')
@@ -109,90 +305,26 @@ class Team:
 		self.uid = uid # String of UID, might be userID (e.g. 's:40~l:46~t:11')
 		self.venue = venue # Venue object
 
-class LineScore:
-	def _init_(value):
-		self.value = value # Float representing lineScore (e.g. 24.0)
-
-class Record:
-	def _init_(abbreviation, name, summary, type):
-		self.abbreviation = abbreviation # This seems optional as not all have it, String
-		self.name = name # String maybe 2 parts (e.g. 'All ' 'Splits', or 'Home')
-		self.summary = summary # Summary of record as string (e.g. '9-6')
-		self.type = type # Possibly Enum (e.g. 'road', 'home', 'total'
-
-class Statistic:
-	def _init_(abbreviation, displayValue, name):
-		self.abbreviation = abbreviation # Abbreviation of name: (e.g. '3P%')
-		self.displayValue = displayValue # Display value of Number: '31.8'
-		self.name = name # This is probably enum (e.g. 'threePointFieldGoalPct')
-
-class Venue:
-	def _init_(id):
-		self.id = id # String of id (e.g. 2183)
-
-class GeoBroadcast:
-	def _init_(lang, market, media, region, type):
-		self.lang = lang # string for what language (e.g. 'en')
-		self.market = market # Market Object
-		self.media = media # Media Object
-		self.region = region # String for region (e.g. 'us')
-		self.type = type # Type Object
-
-class Market:
-	def _init_(id, type):
-		self.id = id # String representing id
-		self.type = type # String (e.g. 'National')
-
-class Media:
-	def _init_(shortName):
-		self.shortName = shortName # ShortName of Media (e.g. 'NBATV')
-
-class Type:
-	def _init_(id, shortName):
-		self.id = id # String for Id
-		self.shortName = shortName # String for shortName (e.g. 'TV')
+class Venue():
+	def __init__(self, address, capacity, fullName, id, indoor):
+		self.address = Address(**address) # Address Object
+		self.capacity = capacity # Int e.g. 19441
+		self.fullName = fullName # String 'Moda Center'
+		self.id = id # String of id (e.g. 2183) - NONOPTIONAL
+		self.indoor = indoor # Bool
 
 
+# NOTE:
+#  - The classes below here are ones I have seen in the data, but have not seem to show up live.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#class Odds():
+#	def __init__(self, details, overUnder, provider):
+#		self.details = details	# details string (e.g. 'POR -5.5')
+#		self.overUnder = overUnder # Float (e.g. 224.5)
+#		self.provider = Provider(**provider) # Provider Object
+#
+#class Provider():
+#	def __init__(self, id, name, priority):
+#		self.id = id # string ID (e.g. '45')
+#		self.name = name	# 2 part string (e.g. 'William Hill ' '(New Jersey)')
+#		self.priority = priority # Int
