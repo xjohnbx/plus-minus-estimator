@@ -16,43 +16,39 @@ def getEvents():
 	threading.Timer(30.0, getEvents).start()
 	request = 'http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
 	dataRequest = requests.get(request).json()
-	pprint(dataRequest)
+#	pprint(dataRequest)
 
 	nbaGames = NbaGames(**dataRequest)
 	print(nbaGames.day.date)
-	print(len(nbaGames.events))
 
 	for event in nbaGames.events:
-		print(event.name)
-
-	for x in dataRequest['events']:
-		print(x['name'])
-		print(x['status']['type']['name'])
-
-		if x['status']['type']['name'] != constants.STATUS_SCHEDULED:
-			print(x['name'])
-			calculateAndPrintData(x)
+		if event.status.type.name != constants.STATUS_SCHEDULED and event.status.type.name != constants.STATUS_POSTPONED:
+			print(event.name)
+			calculateAndPrintData(event)
 		else:
-			print("{} - {}".format(x['name'], x['status']['type']['name']))
+			print("{} - {}\n".format(event.name, event.status.type.name))
 	print("\n")
 
-def calculateAndPrintData(dataRequest):
+def calculateAndPrintData(event):
 	totalProjectedScore = 0
+	competition = event.competitions[0]
 
-	period = dataRequest['competitions'][0]['status']['period']
-	clock = dataRequest['competitions'][0]['status']['clock']
-	
+	period = competition.status.period
+	clock = competition.status.clock
+
 		# Get Home Team score + Away Team Score
 	totalCurrentScore = 0
-	for x in dataRequest['competitions'][0]['competitors']:
-		totalCurrentScore = totalCurrentScore + int(x['score'])
+	for competitor in competition.competitors:
+		totalCurrentScore = totalCurrentScore + int(competitor.score)
 
 	secondsPlayed = (period * constants.SECONDS_PER_PERIOD) - clock
 
 		# PointsPerSecond * TotalSeconds
-	totalProjectedScore = (totalCurrentScore / secondsPlayed) * (constants.NUMBER_OF_PERIODS * constants.SECONDS_PER_PERIOD)
+	print(secondsPlayed)
+	if secondsPlayed > 0:
+		totalProjectedScore = (totalCurrentScore / secondsPlayed) * (constants.NUMBER_OF_PERIODS * constants.SECONDS_PER_PERIOD)
 
-	print("___________________________\n{}\n+/- {}\nQ{} - {}\n___________________________".format(dataRequest['name'], round(totalProjectedScore, 2), period, dataRequest['competitions'][0]['status']['displayClock']))
+	print("___________________________\n{}\n+/- {}\nQ{} - {}\n___________________________".format(event.name, round(totalProjectedScore, 2), period, competition.status.displayClock))
 
 # --------------------------------------------------------------------------------------
 # This program begins by getting all the NBA games that have are currently being played.
