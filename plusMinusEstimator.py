@@ -16,7 +16,7 @@ def getEvents():
 	threading.Timer(30.0, getEvents).start()
 	request = 'http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard'
 	dataRequest = requests.get(request).json()
-#	pprint(dataRequest)
+	pprint(dataRequest)
 
 	nbaGames = NbaGames(**dataRequest)
 	print(nbaGames.day.date)
