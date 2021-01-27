@@ -1,4 +1,5 @@
 # This is a file with classes that conform to the json returned from this endpoint: http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
+import json
 
 class NbaGames():
 	def __init__(self, day, events, leagues, season):
@@ -45,7 +46,7 @@ class Broadcast():
 		self.names = names # Collection of strings representing channel (e.g. 'FS1', 'NBATV')
 
 class Competition():
-	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, odds, notes, recent, situation, startDate, status, timeValid, type, uid, venue):
+	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent, startDate, status, timeValid, type, uid, venue, odds=None, situation=None, tickets=None):
 		self.attendance = attendance # Int
 
 		broadcastCollection = []
@@ -69,11 +70,25 @@ class Competition():
 		self.id = id # String representing id (e.g. '401267409')
 		self.neutralSite = neutralSite # Bool
 		self.notes = notes # This is an empty array. I assume a Collection of strings, maybe a Note object
-	# TODO:	self.odds = odds # This is a optional Variable - Collection of Odds Type
+		
+		if odds is not None:
+			oddsCollection = []
+			for odd in odds:
+				oddsCollection.append(Odd(**odd))
+			self.odds = odds # This is a optional Variable - Collection of Odds Type
+			
 		self.recent = recent # Bool
-		self.situation = Situation(**situation) # Situation Object
+		
+		if situation is not None:
+			self.situation = Situation(**situation) # Situation Object
+			
 		self.startDate = startDate # String of Date e.g. '2021-01-26T03:00Z'
 		self.status = Status(**status) # Status Object'
+		
+		if tickets is not None:
+			ticketsCollection = []
+			for ticket in tickets:
+				ticketsCollection.append(Ticket(**ticket))
 		self.timeValid = timeValid # Bool
 		self.type = Competition_Type(**type) # CompetitionType object
 		self.uid = uid # String of userId 's:40~l:46~e:401267427~c:401267427'
@@ -85,19 +100,21 @@ class Competition_Type():
 		self.id = id # String of Int e.g. '1'
 
 class Competitor():
-	def __init__(self, homeAway, id, leaders, lineScores, order, records, score, statistics, team, type, uid):
+	def __init__(self, homeAway, id, order, records, score, statistics, team, type, uid, leaders=None, lineScores=None):
 		self.homeAway = homeAway # String that will be 'home' or 'away'
 		self.id = id # String representing id as number
 
-		leaderCollection = []
-		for leader in leaders:
-			leaderCollection.append(Leader(**leader))
-		self.leaders = leaderCollection # Collection of Leader objects
+		if leaders is not None:
+			leaderCollection = []
+			for leader in leaders:
+				leaderCollection.append(Leader(**leader))
+			self.leaders = leaderCollection # Collection of Leader objects
 
-		lineScoreCollection = []
-		for lineScore in lineScoreCollection:
-			lineScoreCollection.append(LineScore(**lineScore))
-		self.lineScores = lineScoreCollection # Collection of LineScores - This is optional
+		if lineScores is not None:
+			lineScoreCollection = []
+			for lineScore in lineScores:
+				lineScoreCollection.append(LineScore(**lineScore))
+			self.lineScores = lineScoreCollection # Collection of LineScores - This is optional
 
 		self.order = order # Int representing not sure (e.g. 0)
 
@@ -164,7 +181,7 @@ class LastPlay():
 		self.type = LastPlay_Type(**type) # Type Object (id, text)
 
 class LastPlay_Type():
-	def __init__(self, id, text)
+	def __init__(self, id, text):
 		self.id = id # String e.g. '412'
 		self.text = text # Two part 'End ' 'Period'
 
@@ -174,7 +191,7 @@ class Leader():
 		self.displayName = displayName # String giving display name of above (e.g. "Points", "Rebounds")
 
 		statLeaderCollection = []
-		for leader in learders:
+		for leader in leaders:
 			statLeaderCollection.append(StatLeader(**leader))
 		self.statLeaders = statLeaderCollection # This is competitors.leaders.leaders (This is a collection of each stat)
 
@@ -191,20 +208,28 @@ class League():
 		self.calendarType = calendarType # Enum I assume e.g. 'day'
 		self.id = id # String of Int e.g. '46'
 		self.name = name # String long name e.g. 'National Basketball Association'
-		self.season = Season(**season) # Season Object
+		self.season = League_Season(**season) # Season Object
 		self.slug = slug # String e.g. 'nba' - Not sure what this represents
 		self.uid = uid # String of id e.g. 's:40~l:46'
 
+class League_Season():
+	def __init__(self, endDate, startDate, type, year):
+		self.endDate = endDate
+		self.startDate = startDate
+		self.type = Season_Type(**type)
+		self.year = year
+		
 class LineScore():
 	def __init__(self, value):
 		self.value = value # Float representing lineScore (e.g. 24.0)
 
 class Link():
 	# href, rel are used, rest are optional
-	def __init__(self, href, isExternal, isPremium, rel, shortText, text):
+	def __init__(self, href, isExternal=None, isPremium=None, language=None, rel=None, shortText=None, text=None):
 		self.href = href # String address of espn home screen for player
 		self.isExternal = isExternal # Bool
 		self.isPremium = isPremium # Bool
+		self.language = language # String e.g. 'en-us'
 		self.rel = rel # Collection of Strings
 		self.shortText = shortText # Optional ShortText e.g. 'Gamecast'
 		self.text = text # String representing first rel it looks like (e.g. 'Clubhouse')
@@ -218,6 +243,13 @@ class Media():
 	def __init__(self, shortName):
 		self.shortName = shortName # ShortName of Media (e.g. 'NBATV')
 
+class Odd():
+	def __init__(self, details, overUnder, provider):
+		self.details = details	# details string (e.g. 'POR -5.5')
+		self.overUnder = overUnder # Float (e.g. 224.5)
+		self.provider = Provider(**provider)
+
+
 class Position():
 	def __init__(self, abbreviation):
 		self.abbreviation = abbreviation # String for position shortened (e.g. 'SG' - Starting Guard)
@@ -228,6 +260,12 @@ class Probability():
 		self.homeWinPercentage = homeWinPercentage # Float 0.24
 		self.tiePercentage = tiePercentage # Float 0.0
 
+class Provider():
+	def __init__(self, id, name, priority):
+		self.id = id # string ID (e.g. '45')
+		self.name = name	# 2 part string (e.g. 'William Hill ' '(New Jersey)')
+		self.priority = priority # Int
+
 class Record():
 	def __init__(self, abbreviation, name, summary, type):
 		self.abbreviation = abbreviation # This seems optional as not all have it, String
@@ -236,14 +274,12 @@ class Record():
 		self.type = type # Possibly Enum (e.g. 'road', 'home', 'total')
 
 class Season():
-	def __init__(self, endDate, startDate, type, year):
-		self.endDate = endDate # String of date e.g '2020-12-11T08:00Z'
-		self.startDate = startDate # String of date e.g '2020-12-11T08:00Z'
-		self.type = Season_Type(**type) # Int e.g. 2 - NONOPTIONAL
+	def __init__(self, type, year):
+		self.type = type # Int e.g. 2 - NONOPTIONAL
 		self.year = year # Int e.g. 2021 - NONOPTIONAL
 
 class Season_Type():
-	def __init__(self, abbreviation, id, name, type)
+	def __init__(self, abbreviation, id, name, type):
 		self.abbreviation = abbreviation # String 'reg'
 		self.id = id # String rep of Int e.g. '1'
 		self.name = name # String - 'Regular Season'
@@ -254,12 +290,13 @@ class Situation():
 		self.lastPlay = LastPlay(**lastPlay)
 
 class Statistic():
-	def __init__(self, abbreviation, displayValue, name):
+	def __init__(self, abbreviation, displayValue, name, rankDisplayValue=None):
 		self.abbreviation = abbreviation # Abbreviation of name: (e.g. '3P%')
 		self.displayValue = displayValue # Display value of Number: '31.8'
 		self.name = name # This is probably enum (e.g. 'threePointFieldGoalPct')
+		self.rankDisplayValue = rankDisplayValue # String of rank in stat
 
-class StatLeaders():
+class StatLeader():
 	def __init__(self, athlete, displayValue, team, value):
 		self.athlete = Athlete(**athlete) # Athlete
 		self.displayValue = displayValue # String representing number (e.g. '13')
@@ -283,9 +320,19 @@ class Status_Type():
 		self.shortDetail = shortDetail # String (e.g. '1/25 - ' '10:00 PM ' 'EST')
 		self.state = state # String probably enum (e.g. 'pre')
 
+class Ticket():
+	def __init__(self, links, numberAvailable, summary):
+		linksCollection = []
+		for link in links:
+			linksCollection.append(Link(**link))
+		self.links = linksCollection
+		
+		self.numberAvailable = numberAvailable
+		self.summary = summary
+		
 class Team():
 	# Id is the only one that is used everywhere
-	def __init__(self, abbreviation, alternateColor, color, displayName, id, isActive, links, location, logo, name, shortDisplayName, uid, venue):
+	def __init__(self, id, abbreviation=None, alternateColor=None, color=None, displayName=None, isActive=None, links=None, location=None, logo=None, name=None, shortDisplayName=None, uid=None, venue=None):
 		self.abbreviation = abbreviation # Abbreviation of team name (e.g. 'IND')
 		self.alternateColor = alternateColor # String representing alternateColor: (e.g. '00275d')
 		self.color = color # This is the color String (e.g. '061642')
@@ -293,10 +340,11 @@ class Team():
 		self.id = id # String representing number as id (e.g. '11')
 		self.isActive = isActive # Bool
 
-		linkCollection = []
-		for link in links:
-			linkCollection.append(Link(**link))
-		self.links = linkCollection # Collection of Links
+		if links is not None:
+			linkCollection = []
+			for link in links:
+				linkCollection.append(Link(**link))
+			self.links = linkCollection # Collection of Links
 
 		self.location = location # String of location (e.g. 'Indiana')
 		self.logo = logo # Link to the logo of the team as a String
@@ -312,19 +360,3 @@ class Venue():
 		self.fullName = fullName # String 'Moda Center'
 		self.id = id # String of id (e.g. 2183) - NONOPTIONAL
 		self.indoor = indoor # Bool
-
-
-# NOTE:
-#  - The classes below here are ones I have seen in the data, but have not seem to show up live.
-
-#class Odds():
-#	def __init__(self, details, overUnder, provider):
-#		self.details = details	# details string (e.g. 'POR -5.5')
-#		self.overUnder = overUnder # Float (e.g. 224.5)
-#		self.provider = Provider(**provider) # Provider Object
-#
-#class Provider():
-#	def __init__(self, id, name, priority):
-#		self.id = id # string ID (e.g. '45')
-#		self.name = name	# 2 part string (e.g. 'William Hill ' '(New Jersey)')
-#		self.priority = priority # Int
