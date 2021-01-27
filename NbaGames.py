@@ -1,5 +1,4 @@
 # This is a file with classes that conform to the json returned from this endpoint: http://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard
-import json
 
 class NbaGames():
 	def __init__(self, day, events, leagues, season):
