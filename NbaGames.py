@@ -99,7 +99,7 @@ class Competition_Type():
 		self.id = id # String of Int e.g. '1'
 
 class Competitor():
-	def __init__(self, homeAway, id, order, records, score, statistics, team, type, uid, leaders=None, linescores=None):
+	def __init__(self, homeAway, id, order, records, score, statistics, team, type, uid, leaders=None, linescores=None, winner=None):
 		self.homeAway = homeAway # String that will be 'home' or 'away'
 		self.id = id # String representing id as number
 
@@ -132,6 +132,7 @@ class Competitor():
 		self.team = Team(**team) # Team Object
 		self.type = type # String (e.g. 'team')
 		self.uid = uid # String for userId I assume ( e.g. 's:40~l:46~t:11')
+		self.winner = winner # Bool
 
 class Day():
 	def __init__(self, date):
