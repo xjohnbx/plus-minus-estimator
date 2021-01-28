@@ -22,7 +22,7 @@ class Address():
 		self.state = state # String e.g. 'OR'
 
 class Athlete():
-	def __init__(self, active, displayName, fullName, headshot, id, jersey, links, position, shortName, team):
+	def __init__(self, displayName, fullName, headshot, id, jersey, links, position, shortName, team, active=None):
 		self.active = active # Bool
 		self.displayName = displayName # Two part String 'Justin ', 'Holiday'
 		self.fullName = fullName # Two part String 'Justin ' 'Holiday'
@@ -99,7 +99,7 @@ class Competition_Type():
 		self.id = id # String of Int e.g. '1'
 
 class Competitor():
-	def __init__(self, homeAway, id, order, records, score, statistics, team, type, uid, leaders=None, lineScores=None):
+	def __init__(self, homeAway, id, order, records, score, statistics, team, type, uid, leaders=None, linescores=None):
 		self.homeAway = homeAway # String that will be 'home' or 'away'
 		self.id = id # String representing id as number
 
@@ -109,11 +109,11 @@ class Competitor():
 				leaderCollection.append(Leader(**leader))
 			self.leaders = leaderCollection # Collection of Leader objects
 
-		if lineScores is not None:
-			lineScoreCollection = []
-			for lineScore in lineScores:
-				lineScoreCollection.append(LineScore(**lineScore))
-			self.lineScores = lineScoreCollection # Collection of LineScores - This is optional
+		if linescores is not None:
+			linescoreCollection = []
+			for linescore in linescores:
+				linescoreCollection.append(Linescore(**linescore))
+			self.lineScores = linescoreCollection # Collection of LineScores - This is optional
 
 		self.order = order # Int representing not sure (e.g. 0)
 
@@ -172,12 +172,21 @@ class Geo_Type():
 		self.shortName = shortName # String for shortName (e.g. 'TV')
 
 class LastPlay():
-	def __init__(self, id, probability, scoreValue, text, type):
+	def __init__(self, id, probability, scoreValue, text, type, athletesInvolved=None, team=None):
+	
+		if athletesInvolved is not None:
+			athleteCollection = []
+			for athlete in athleteCollection:
+				athleteCollection.append(athlete)
+			self.athletesInvolved = athleteCollection
+			
 		self.id = id # String rep of Id '401267427323'
 		self.probability = Probability(**probability) # Probability Object
 		self.scoreValue = scoreValue # Int of Score
 		self.text = text # String two part - 'End of the ' '2nd Quarter'
 		self.type = LastPlay_Type(**type) # Type Object (id, text)
+		if team is not None:
+			self.team = Team(**team)
 
 class LastPlay_Type():
 	def __init__(self, id, text):
@@ -218,12 +227,11 @@ class League_Season():
 		self.type = Season_Type(**type)
 		self.year = year
 		
-class LineScore():
+class Linescore():
 	def __init__(self, value):
 		self.value = value # Float representing lineScore (e.g. 24.0)
 
 class Link():
-	# href, rel are used, rest are optional
 	def __init__(self, href, isExternal=None, isPremium=None, language=None, rel=None, shortText=None, text=None):
 		self.href = href # String address of espn home screen for player
 		self.isExternal = isExternal # Bool
@@ -330,7 +338,6 @@ class Ticket():
 		self.summary = summary
 		
 class Team():
-	# Id is the only one that is used everywhere
 	def __init__(self, id, abbreviation=None, alternateColor=None, color=None, displayName=None, isActive=None, links=None, location=None, logo=None, name=None, shortDisplayName=None, uid=None, venue=None):
 		self.abbreviation = abbreviation # Abbreviation of team name (e.g. 'IND')
 		self.alternateColor = alternateColor # String representing alternateColor: (e.g. '00275d')

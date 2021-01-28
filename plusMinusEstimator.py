@@ -19,11 +19,9 @@ def getEvents():
 #	pprint(dataRequest)
 
 	nbaGames = NbaGames(**dataRequest)
-	print(nbaGames.day.date)
 
 	for event in nbaGames.events:
 		if event.status.type.name != constants.STATUS_SCHEDULED and event.status.type.name != constants.STATUS_POSTPONED:
-			print(event.name)
 			calculateAndPrintData(event)
 		else:
 			print("{} - {}\n".format(event.name, event.status.type.name))
@@ -35,20 +33,25 @@ def calculateAndPrintData(event):
 
 	period = competition.status.period
 	clock = competition.status.clock
-
+	awayTeam = ''
+	homeTeam = ''
 		# Get Home Team score + Away Team Score
 	totalCurrentScore = 0
 	for competitor in competition.competitors:
+		if competitor.homeAway == constants.AWAY_TEAM:
+			awayTeam = '{} - {}'.format(competitor.team.abbreviation, competitor.score)
+		else:
+			homeTeam = '{} - {}'.format(competitor.team.abbreviation, competitor.score)
+			
 		totalCurrentScore = totalCurrentScore + int(competitor.score)
 
 	secondsPlayed = (period * constants.SECONDS_PER_PERIOD) - clock
 
 		# PointsPerSecond * TotalSeconds
-	print(secondsPlayed)
 	if secondsPlayed > 0:
 		totalProjectedScore = (totalCurrentScore / secondsPlayed) * (constants.NUMBER_OF_PERIODS * constants.SECONDS_PER_PERIOD)
 
-	print("___________________________\n{}\n+/- {}\nQ{} - {}\n___________________________".format(event.name, round(totalProjectedScore, 2), period, competition.status.displayClock))
+	print("___________________________\n{}\n{}	{}\n+/- {}\nQ{} - {}\n___________________________".format(event.name, awayTeam, homeTeam, round(totalProjectedScore, 2), period, competition.status.displayClock))
 
 # --------------------------------------------------------------------------------------
 # This program begins by getting all the NBA games that have are currently being played.
