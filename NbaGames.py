@@ -45,7 +45,7 @@ class Broadcast():
 		self.names = names # Collection of strings representing channel (e.g. 'FS1', 'NBATV')
 
 class Competition():
-	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent, startDate, status, timeValid, type, uid, venue, odds=None, situation=None, tickets=None):
+	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent, startDate, status, timeValid, type, uid, venue, headlines=None, odds=None, situation=None, tickets=None):
 		self.attendance = attendance # Int
 
 		broadcastCollection = []
@@ -66,6 +66,12 @@ class Competition():
 			geoBroadcastCollection.append(GeoBroadcast(**geoBroadcast))
 		self.geoBroadcasts = geoBroadcastCollection # Collection of GeoBroadcast
 
+		if headlines is not None:
+			headlineCollection = []
+			for headline in headlineCollection:
+				headlineCollection.append(Headline(**headline))
+			self.headlines = headlineCollection # Collection of headline objects
+			
 		self.id = id # String representing id (e.g. '401267409')
 		self.neutralSite = neutralSite # Bool
 		self.notes = notes # This is an empty array. I assume a Collection of strings, maybe a Note object
@@ -138,6 +144,11 @@ class Day():
 	def __init__(self, date):
 		self.date = date # Date
 
+class DeviceRestrictions():
+	def __init__(self, devices, type):
+		self.devices = devices # Collection of Strings e.g. 'desktop'
+		self.type = type # String e.g. 'whitelist'
+		
 class Event():
 	def __init__(self, competitions, date, id, links, name, season, shortName, status, uid):
 		competitionCollection = []
@@ -167,11 +178,27 @@ class GeoBroadcast():
 		self.region = region # String for region (e.g. 'us')
 		self.type = Geo_Type(**type) # GeoType Object
 
+class GeoRestrictions():
+	def __init__(self, countries, type):
+		self.countries = countries # Collection of Strings e.g. states and countries 'IL'
+		self.type = type # String e.g. 'whitelist'
+		
 class Geo_Type():
 	def __init__(self, id, shortName):
 		self.id = id # String for Id
 		self.shortName = shortName # String for shortName (e.g. 'TV')
 
+class Headline():
+	def __init__(self, description, shortLinkText, type, video):
+		self.description = description # String long text description
+		self.shortLinkText = shortLinkText # String - shortened version of description
+		self.type = type # String e.g. 'recap'
+		
+		videoCollection = []
+		for vid in video:
+			videoCollection.append(Video(**vid))
+		self.video = videoCollection # Collection of Video Objects
+		
 class LastPlay():
 	def __init__(self, id, probability, scoreValue, text, type, athletesInvolved=None, team=None):
 	
@@ -360,6 +387,14 @@ class Team():
 		self.uid = uid # String of UID, might be userID (e.g. 's:40~l:46~t:11')
 		self.venue = venue # Venue object
 
+class Tracking():
+	def __init__(self, coverageType, leagueName, sportName, trackingId, trackingName):
+		self.coverageType = coverageType # String 'Final ' 'Game ' 'Highlight'
+		self.leagueName = leagueName # String 'No ' 'League'
+		self.sportName = sportName # String 'nba'
+		self.trackingId = trackingId # String 'dm_210125_NBA_Highlight_lebron_sot_full'
+		self.trackingName = trackingName # String - MultiPart
+		
 class Venue():
 	def __init__(self, address, capacity, fullName, id, indoor):
 		self.address = Address(**address) # Address Object
@@ -367,3 +402,20 @@ class Venue():
 		self.fullName = fullName # String 'Moda Center'
 		self.id = id # String of id (e.g. 2183) - NONOPTIONAL
 		self.indoor = indoor # Bool
+
+class Video():
+	def __init__(self, deviceRestrictions, duration, geoRestrictions, headline, id, links, source, thumbnail, tracking):
+		self.deviceRestrictions = DeviceRestrictions(**deviceRestrictions) # DeviceRestriction Object
+		self.duration = duration # Int e.g. 120 I assume seconds
+		self.geoRestrictions = GeoRestrictions(**geoRestrictions) # GeoRestrictions object
+		self.headline = headline # String
+		self.id = id # Int 30779413
+		
+		# TODO: Links is a mess in VSCode for example formatting
+		self.links = links
+		self.source = source # String e.g. 'espn'
+		self.thumbnail = thumbnail # String representing thumbnail link
+		self.tracking = Tracking(**tracking) # Tracking Object
+		
+#class VideoLink():
+#	def __init__
