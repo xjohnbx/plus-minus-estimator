@@ -309,8 +309,9 @@ class Record():
 		self.type = type # Possibly Enum (e.g. 'road', 'home', 'total')
 
 class Season():
-	def __init__(self, type, year):
+	def __init__(self, type, year, slug=None):
 		self.type = type # Int e.g. 2 - NONOPTIONAL
+		self.slug = slug # TODO: Not sure what the format is for this we need to check
 		self.year = year # Int e.g. 2021 - NONOPTIONAL
 
 class Season_Type():
