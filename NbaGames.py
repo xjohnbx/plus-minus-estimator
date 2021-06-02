@@ -45,7 +45,7 @@ class Broadcast():
 		self.names = names # Collection of strings representing channel (e.g. 'FS1', 'NBATV')
 
 class Competition():
-	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent, startDate, status, timeValid, type, uid, venue, headlines=None, odds=None, situation=None, tickets=None):
+	def __init__(self, attendance, broadcasts, competitors, conferenceCompetition, date, geoBroadcasts, id, neutralSite, notes, recent, series, startDate, status, timeValid, type, uid, venue, headlines=None, odds=None, situation=None, tickets=None):
 		self.attendance = attendance # Int
 
 		broadcastCollection = []
@@ -84,6 +84,7 @@ class Competition():
 			
 		self.recent = recent # Bool
 		
+		self.series = series
 		if situation is not None:
 			self.situation = Situation(**situation) # Situation Object
 			
@@ -309,7 +310,8 @@ class Record():
 		self.type = type # Possibly Enum (e.g. 'road', 'home', 'total')
 
 class Season():
-	def __init__(self, type, year):
+	def __init__(self, type, year, slug=None):
+		self.slug = slug # TODO: We need to figure this out
 		self.type = type # Int e.g. 2 - NONOPTIONAL
 		self.year = year # Int e.g. 2021 - NONOPTIONAL
 
